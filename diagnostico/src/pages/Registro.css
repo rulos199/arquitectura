@@ -1,0 +1,104 @@
+
+.register-background {
+  background-image: url('IA.png');
+      background-size: cover; /* Asegura que cubra todo el fondo */
+      background-position: center; /* Centra la imagen */
+      background-repeat: no-repeat; /* No repite la imagen */
+      background-attachment: fixed; /* La imagen se queda fija al hacer scroll */
+    
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+   
+  }
+  
+ 
+  /* Estilo para el fondo general de la página */
+
+/* Contenedor principal del formulario de registro */
+.register-form {
+  width: 300px;
+  background-color: rgba(255, 255, 255, 0.7); /* Fondo semitransparente */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Título del formulario */
+.register-form h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Contenedor de cada campo de entrada */
+.input-container {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+/* Icono dentro del contenedor de entrada */
+.input-container i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 18px;
+}
+
+/* Estilo del campo de entrada */
+.input-container input {
+  width: 100%;
+  padding: 10px 10px 10px 40px; /* Deja espacio para el icono */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: #eaeaea;
+  color: #333;
+}
+
+/* Placeholder estilizado */
+.input-container input::placeholder {
+  color: #d3d3d3;
+  font-weight: bold;
+}
+
+/* Estilo del botón de registro */
+.register-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #555;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-btn:hover {
+  background-color: #333;
+}
+
+/* Estilo de mensaje */
+.register-form p {
+  color: red;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* Estilos para pantalla completa */
+.register-background {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 150px;
+}
+
+.register-form {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 40px;
+}
