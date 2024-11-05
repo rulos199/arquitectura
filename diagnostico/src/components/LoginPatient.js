@@ -1,10 +1,9 @@
-// pages/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './Registro.css'; // Importa el archivo CSS
+import '../Registro.css'; // Asegúrate de que la ruta sea correcta
 
-const Login = ({ setToken }) => {
+const LoginPatient = ({ setToken }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -13,7 +12,7 @@ const Login = ({ setToken }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', { username, password });
+      const response = await axios.post('http://localhost:5000/api/users/login/patient', { username, password });
       setToken(response.data.token);
       setMessage('Inicio de sesión exitoso');
       navigate('/'); // Redirige a la página principal o dashboard
@@ -25,7 +24,7 @@ const Login = ({ setToken }) => {
   return (
     <div className="register-background">
       <div className="register-form">
-        <h2>Iniciar Sesión</h2>
+        <h2>Iniciar Sesión Paciente</h2>
         <form onSubmit={handleLogin}>
           <div className="input-container">
             <i className="fas fa-user"></i> {/* Puedes personalizar el icono según tu preferencia */}
@@ -53,4 +52,4 @@ const Login = ({ setToken }) => {
   );
 };
 
-export default Login;
+export default LoginPatient;

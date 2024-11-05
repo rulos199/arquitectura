@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Registro from './pages/Registro';
-import Login from './pages/login';
-
-
+import RegisterPatient from './components/RegisterPatient';
+import RegisterDoctor from './components/RegisterDoctor';
+import LoginPatient from './components/LoginPatient';
+import LoginDoctor from './components/LoginDoctor';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -38,13 +38,15 @@ function App() {
           </>
         ) : (
           <nav>
-            <Link to="/login">Iniciar Sesión</Link> | <Link to="/register">Registro</Link>
+            <Link to="/login/patient">Iniciar Sesión Paciente</Link> | <Link to="/login/doctor">Iniciar Sesión Doctor</Link> | <Link to="/register/patient">Registro Paciente</Link> | <Link to="/register/doctor">Registro Doctor</Link>
           </nav>
         )}
         
         <Routes>
-          <Route path="/login" element={<Login setToken={(token) => { setToken(token); localStorage.setItem('token', token); }} />} />
-          <Route path="/register" element={<Registro />} />
+          <Route path="/login/patient" element={<LoginPatient setToken={(token) => { setToken(token); localStorage.setItem('token', token); }} />} />
+          <Route path="/login/doctor" element={<LoginDoctor setToken={(token) => { setToken(token); localStorage.setItem('token', token); }} />} />
+          <Route path="/register/patient" element={<RegisterPatient />} />
+          <Route path="/register/doctor" element={<RegisterDoctor />} />
         </Routes>
       </div>
     </Router>
@@ -52,4 +54,3 @@ function App() {
 }
 
 export default App;
-
