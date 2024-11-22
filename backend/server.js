@@ -6,6 +6,8 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const pool = require('./db'); // Asegúrate de que db.js esté en el backend
 const bcrypt = require('bcrypt');
+const appointmentController = require('./controllers/appointmentController');
+
 
 const app = express();
 
@@ -57,14 +59,13 @@ app.post('/api/users/login/patient', async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.user_id, role: 'patient' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ message: 'Inicio de sesión exitoso', token });
+    res.status(200).json({ message: 'Inicio de sesión exitoso', token, userName: user.name, userId: user.user_id });
   } catch (error) {
     res.status(500).json({ message: 'Error en el inicio de sesión', error: error.message });
   }
 });
 
-
-// registro de doctores y login
+// Registro de doctores y login
 app.post('/api/users/register/doctor', async (req, res) => {
   const { username, password, name, id_number, specialty, availability } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -102,28 +103,48 @@ app.post('/api/users/login/doctor', async (req, res) => {
   }
 });
 
-
 // Rutas de citas
-app.post('/api/appointments/book', authenticateToken, async (req, res) => {
-  const { patientId, doctorId, date, time, appointmentType } = req.body;
+app.post('/api/appointments/book', authenticateToken, appointmentController.bookAppointment);
+app.get('/api/appointments', authenticateToken, appointmentController.getAppointments);
 
+
+// Obtener Médicos Activos
+app.get('/api/doctors', async (req, res) => {
   try {
-    const result = await pool.query(
-      'INSERT INTO Appointment (date, time, patient_id, doctor_id, appointment_type) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [date, time, patientId, doctorId, appointmentType]
-    );
-    res.status(201).json({ message: 'Cita reservada exitosamente', appointment: result.rows[0] });
+    const result = await pool.query('SELECT * FROM Doctor WHERE availability = true');
+    res.status(200).json(result.rows);
   } catch (error) {
-    res.status(500).json({ message: 'Error al reservar la cita', error: error.message });
+    res.status(500).json({ message: 'Error al obtener los médicos', error: error.message });
   }
 });
 
-app.get('/api/appointments', authenticateToken, async (req, res) => {
+// Obtener Medicamentos del Paciente
+app.get('/api/medicamentos/:patientId', async (req, res) => {
+  const { patientId } = req.params;
+
   try {
-    const result = await pool.query('SELECT * FROM Appointment WHERE patient_id = $1', [req.user.id]);
+    const result = await pool.query(
+      'SELECT m.name, m.dose FROM Medication m JOIN Diagnosis d ON m.medication_id = d.medication_id JOIN Consultation c ON d.consultation_id = c.consultation_id WHERE c.patient_id = $1 ORDER BY c.consultation_id DESC LIMIT 1',
+      [patientId]
+    );
     res.status(200).json(result.rows);
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener las citas', error: error.message });
+    res.status(500).json({ message: 'Error al obtener los medicamentos', error: error.message });
+  }
+});
+
+// Obtener Historia Clínica del Paciente
+app.get('/api/historia/:patientId', async (req, res) => {
+  const { patientId } = req.params;
+
+  try {
+    const result = await pool.query(
+      'SELECT c.consultation_id, c.symptoms, c.parameters, d.suggestions, d.disease_probability, d.recommendations FROM Consultation c JOIN Diagnosis d ON c.consultation_id = d.consultation_id WHERE c.patient_id = $1 AND c.date >= NOW() - INTERVAL \'6 months\'',
+      [patientId]
+    );
+    res.status(200).json(result.rows);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener la historia clínica', error: error.message });
   }
 });
 

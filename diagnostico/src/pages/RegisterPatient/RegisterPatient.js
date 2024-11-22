@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
-import { registerDoctor } from '../services/api';
+import { registerPatient } from '../../services/api';
 import '../Registro.css'; // Asegúrate de que la ruta sea correcta
 
-function RegisterDoctor() {
+function RegisterPatient() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [idNumber, setIdNumber] = useState('');
-  const [specialty, setSpecialty] = useState('');
-  const [availability, setAvailability] = useState(true);
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await registerDoctor({
+      const response = await registerPatient({
         username,
         password,
         name,
         id_number: idNumber,
-        specialty,
-        availability
+        email,
+        phone
       });
       setMessage(response.data.message); // Mostrar mensaje de éxito o error
     } catch (error) {
@@ -31,7 +31,7 @@ function RegisterDoctor() {
   return (
     <div className="register-background">
       <div className="register-form">
-        <h2>Registro de Doctor</h2>
+        <h2>Registro de Paciente</h2>
         <form onSubmit={handleRegister}>
           <div className="input-container">
             <i className="fas fa-user"></i>
@@ -70,21 +70,22 @@ function RegisterDoctor() {
             />
           </div>
           <div className="input-container">
-            <i className="fas fa-stethoscope"></i>
+            <i className="fas fa-envelope"></i>
             <input
-              type="text"
-              placeholder="Especialidad"
-              value={specialty}
-              onChange={(e) => setSpecialty(e.target.value)}
+              type="email"
+              placeholder="Correo Electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="input-container">
-            <i className="fas fa-calendar-check"></i>
+            <i className="fas fa-phone"></i>
             <input
-              type="checkbox"
-              checked={availability}
-              onChange={(e) => setAvailability(e.target.checked)}
-            /> Disponibilidad
+              type="text"
+              placeholder="Teléfono"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </div>
           <button type="submit" className="register-btn">Registrarse</button>
         </form>
@@ -94,4 +95,4 @@ function RegisterDoctor() {
   );
 }
 
-export default RegisterDoctor;
+export default RegisterPatient;

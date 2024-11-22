@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../Registro.css'; // Asegúrate de que la ruta sea correcta
 
-const LoginDoctor = ({ setToken }) => {
+const LoginPatient = ({ setToken, setUserName }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -12,10 +12,14 @@ const LoginDoctor = ({ setToken }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/users/login/doctor', { username, password });
+      const response = await axios.post('http://localhost:5000/api/users/login/patient', { username, password });
       setToken(response.data.token);
+      setUserName(response.data.userName); // Asegúrate de que la respuesta contenga el nombre del usuario
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userName', response.data.userName);
+      localStorage.setItem('patientId', response.data.userId); // Almacena el ID del paciente
       setMessage('Inicio de sesión exitoso');
-      navigate('/'); // Redirige a la página principal o dashboard
+      navigate('/home/patient'); // Redirige a la página principal o dashboard
     } catch (error) {
       setMessage('Credenciales incorrectas');
     }
@@ -24,7 +28,7 @@ const LoginDoctor = ({ setToken }) => {
   return (
     <div className="register-background">
       <div className="register-form">
-        <h2>Iniciar Sesión Doctor</h2>
+        <h2>Iniciar Sesión Paciente</h2>
         <form onSubmit={handleLogin}>
           <div className="input-container">
             <i className="fas fa-user"></i> {/* Puedes personalizar el icono según tu preferencia */}
@@ -52,4 +56,4 @@ const LoginDoctor = ({ setToken }) => {
   );
 };
 
-export default LoginDoctor;
+export default LoginPatient;
