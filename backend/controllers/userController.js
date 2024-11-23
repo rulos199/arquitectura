@@ -1,34 +1,9 @@
-// Cargar las variables de entorno desde el archivo .env
-require('dotenv').config();
-
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const pool = require('./db'); // Asegúrate de que db.js esté en el backend
 const bcrypt = require('bcrypt');
-const appointmentController = require('./controllers/appointmentController');
+const jwt = require('jsonwebtoken');
+const pool = require('../db');
 
-
-const app = express();
-
-// Configuración de middlewares
-app.use(cors()); // Permitir solicitudes de otros orígenes
-app.use(express.json()); // Permitir recibir datos JSON en las solicitudes
-
-// Middleware para verificar el token de autenticación
-function authenticateToken(req, res, next) {
-  const token = req.headers['authorization']?.split(' ')[1];
-  if (!token) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-}
-
-// Rutas de usuarios
-app.post('/api/users/register/patient', async (req, res) => {
+// Registro de Pacientes
+const registerPatient = async (req, res) => {
   const { username, password, name, id_number, email, phone } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -41,9 +16,10 @@ app.post('/api/users/register/patient', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error en el registro', error: error.message });
   }
-});
+};
 
-app.post('/api/users/login/patient', async (req, res) => {
+// Inicio de Sesión de Pacientes
+const loginPatient = async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -59,14 +35,14 @@ app.post('/api/users/login/patient', async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.user_id, role: 'patient' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ message: 'Inicio de sesión exitoso', token, userName: user.name, userId: user.user_id });
+    res.status(200).json({ message: 'Inicio de sesión exitoso', token });
   } catch (error) {
     res.status(500).json({ message: 'Error en el inicio de sesión', error: error.message });
   }
-});
+};
 
-// Registro de doctores y login
-app.post('/api/users/register/doctor', async (req, res) => {
+// Registro de Doctores
+const registerDoctor = async (req, res) => {
   const { username, password, name, id_number, specialty, availability } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -79,9 +55,10 @@ app.post('/api/users/register/doctor', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error en el registro', error: error.message });
   }
-});
+};
 
-app.post('/api/users/login/doctor', async (req, res) => {
+// Inicio de Sesión de Doctores
+const loginDoctor = async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -101,25 +78,20 @@ app.post('/api/users/login/doctor', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error en el inicio de sesión', error: error.message });
   }
-});
-
-// Rutas de citas
-app.post('/api/appointments/book', authenticateToken, appointmentController.bookAppointment);
-app.get('/api/appointments', authenticateToken, appointmentController.getAppointments);
-
+};
 
 // Obtener Médicos Activos
-app.get('/api/doctors', async (req, res) => {
+const getActiveDoctors = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM Doctor WHERE availability = true');
     res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener los médicos', error: error.message });
   }
-});
+};
 
 // Obtener Medicamentos del Paciente
-app.get('/api/medicamentos/:patientId', async (req, res) => {
+const getMedicamentos = async (req, res) => {
   const { patientId } = req.params;
 
   try {
@@ -131,10 +103,10 @@ app.get('/api/medicamentos/:patientId', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener los medicamentos', error: error.message });
   }
-});
+};
 
 // Obtener Historia Clínica del Paciente
-app.get('/api/historia/:patientId', async (req, res) => {
+const getHistoriaClinica = async (req, res) => {
   const { patientId } = req.params;
 
   try {
@@ -146,42 +118,15 @@ app.get('/api/historia/:patientId', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener la historia clínica', error: error.message });
   }
-});
+};
 
-// Ruta de ejemplo para obtener datos de la base de datos
-app.get('/api/data', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM tu_tabla');
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error al consultar la base de datos:', error);
-    res.status(500).json({ error: 'Error al consultar la base de datos' });
-  }
-});
+module.exports = {
+  registerPatient,
+  loginPatient,
+  registerDoctor,
+  loginDoctor,
+  getActiveDoctors,
+  getMedicamentos,
+  getHistoriaClinica
+};
 
-// Ruta protegida (solo accesible con un token válido)
-app.get('/protected', authenticateToken, async (req, res) => {
-  try {
-    let result;
-    if (req.user.role === 'patient') {
-      result = await pool.query('SELECT username FROM Patient WHERE user_id = $1', [req.user.id]);
-    } else if (req.user.role === 'doctor') {
-      result = await pool.query('SELECT username FROM Doctor WHERE user_id = $1', [req.user.id]);
-    }
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-
-    const username = result.rows[0].username;
-    res.json({ message: `Bienvenido, ${username}` });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el usuario', error: error.message });
-  }
-});
-
-// Iniciar el servidor
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor iniciado en el puerto ${PORT}`);
-});
