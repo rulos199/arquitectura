@@ -4,10 +4,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const pool = require('./db'); // Asegúrate de que db.js esté en el backend
+const pool = require('./db'); // Asegúrate de que db.js esté configurado correctamente
 const bcrypt = require('bcrypt');
 const appointmentController = require('./controllers/appointmentController');
-
 
 const app = express();
 
@@ -103,12 +102,59 @@ app.post('/api/users/login/doctor', async (req, res) => {
   }
 });
 
-// Rutas de citas
+// Rutas de consultas
+app.post('/api/consultations', authenticateToken, async (req, res) => {
+  console.log('Datos recibidos en el backend:', req.body); // Agregar este log
+
+  const {
+    cedula,
+    peso,
+    estatura,
+    edad,
+    sexo,
+    estadoCivil,
+    ocupacion,
+    actividadFisica,
+    sintomas, // Campo de síntomas
+  } = req.body;
+
+  try {
+    const query = `
+      INSERT INTO consultation (cedula, weight, height, age, gender, marital_status, occupation, physical_activity, symptoms)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *;
+    `;
+
+    const values = [
+      cedula,
+      peso,
+      estatura,
+      edad,
+      sexo,
+      estadoCivil,
+      ocupacion,
+      actividadFisica,
+      sintomas, // Aquí incluimos el valor de síntomas
+    ];
+
+    const result = await pool.query(query, values);
+
+    res.status(201).json({
+      message: 'Consulta registrada exitosamente',
+      consultation: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error al registrar la consulta:', error);
+    res.status(500).json({ message: 'Error al registrar la consulta', error: error.message });
+  }
+});
+
+
+// Rutas de citas y funcionalidades adicionales
 app.post('/api/appointments/book', authenticateToken, appointmentController.bookAppointment);
 app.get('/api/appointments', authenticateToken, appointmentController.getAppointments);
 
-
-// Obtener Médicos Activos
+// Obtener médicos activos
 app.get('/api/doctors', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM Doctor WHERE availability = true');
@@ -118,7 +164,7 @@ app.get('/api/doctors', async (req, res) => {
   }
 });
 
-// Obtener Medicamentos del Paciente
+// Obtener medicamentos del paciente
 app.get('/api/medicamentos/:patientId', async (req, res) => {
   const { patientId } = req.params;
 
@@ -133,7 +179,7 @@ app.get('/api/medicamentos/:patientId', async (req, res) => {
   }
 });
 
-// Obtener Historia Clínica del Paciente
+// Obtener historia clínica del paciente
 app.get('/api/historia/:patientId', async (req, res) => {
   const { patientId } = req.params;
 
@@ -145,38 +191,6 @@ app.get('/api/historia/:patientId', async (req, res) => {
     res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener la historia clínica', error: error.message });
-  }
-});
-
-// Ruta de ejemplo para obtener datos de la base de datos
-app.get('/api/data', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM tu_tabla');
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error al consultar la base de datos:', error);
-    res.status(500).json({ error: 'Error al consultar la base de datos' });
-  }
-});
-
-// Ruta protegida (solo accesible con un token válido)
-app.get('/protected', authenticateToken, async (req, res) => {
-  try {
-    let result;
-    if (req.user.role === 'patient') {
-      result = await pool.query('SELECT username FROM Patient WHERE user_id = $1', [req.user.id]);
-    } else if (req.user.role === 'doctor') {
-      result = await pool.query('SELECT username FROM Doctor WHERE user_id = $1', [req.user.id]);
-    }
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-
-    const username = result.rows[0].username;
-    res.json({ message: `Bienvenido, ${username}` });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el usuario', error: error.message });
   }
 });
 
