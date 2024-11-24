@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const pool = require('./db'); // Asegúrate de que db.js esté configurado correctamente
 const bcrypt = require('bcrypt');
 const appointmentController = require('./controllers/appointmentController');
+const consultationController = require('./controllers/consultationController');
+
 
 const app = express();
 
@@ -96,58 +98,15 @@ app.post('/api/users/login/doctor', async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.user_id, role: 'doctor' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ message: 'Inicio de sesión exitoso', token });
+    res.status(200).json({ message: 'Inicio de sesión exitoso', token, userName: user.name, userId: user.user_id });
   } catch (error) {
     res.status(500).json({ message: 'Error en el inicio de sesión', error: error.message });
   }
 });
 
 // Rutas de consultas
-app.post('/api/consultations', authenticateToken, async (req, res) => {
-  console.log('Datos recibidos en el backend:', req.body); // Agregar este log
-
-  const {
-    cedula,
-    peso,
-    estatura,
-    edad,
-    sexo,
-    estadoCivil,
-    ocupacion,
-    actividadFisica,
-    sintomas, // Campo de síntomas
-  } = req.body;
-
-  try {
-    const query = `
-      INSERT INTO consultation (cedula, weight, height, age, gender, marital_status, occupation, physical_activity, symptoms)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING *;
-    `;
-
-    const values = [
-      cedula,
-      peso,
-      estatura,
-      edad,
-      sexo,
-      estadoCivil,
-      ocupacion,
-      actividadFisica,
-      sintomas, // Aquí incluimos el valor de síntomas
-    ];
-
-    const result = await pool.query(query, values);
-
-    res.status(201).json({
-      message: 'Consulta registrada exitosamente',
-      consultation: result.rows[0],
-    });
-  } catch (error) {
-    console.error('Error al registrar la consulta:', error);
-    res.status(500).json({ message: 'Error al registrar la consulta', error: error.message });
-  }
-});
+app.get('/api/patients/:cedula', authenticateToken, consultationController.getPatientIdByCedula);
+app.post('/api/consultations', authenticateToken, consultationController.registerConsultation);
 
 
 // Rutas de citas y funcionalidades adicionales
