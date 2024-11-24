@@ -17,6 +17,7 @@ const LoginDoctor = ({ setToken, setUserName }) => {
       setUserName(response.data.userName); // Asegúrate de que la respuesta contenga el nombre del usuario
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userName', response.data.userName);
+      localStorage.setItem('doctorId', response.data.userId); // Almacena el ID del doctor
       setMessage('Inicio de sesión exitoso');
       navigate('/home/doctor'); // Redirige a la página principal o dashboard
     } catch (error) {

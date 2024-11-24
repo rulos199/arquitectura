@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getPatientIdByCedula, registerConsultation } from '../../services/api';
 
 const RegistrarConsulta = () => {
   const [formData, setFormData] = useState({
@@ -30,19 +31,38 @@ const RegistrarConsulta = () => {
 
     try {
       const token = localStorage.getItem('token'); // Suponiendo que el token se guarda en el localStorage
-      const response = await fetch('http://localhost:5000/api/consultations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Agregar el token para la autenticación
-        },
-        body: JSON.stringify(formData),
-      });
+      const doctorId = localStorage.getItem('doctorId'); // Recupera el ID del doctor del localStorage
 
-      if (response.ok) {
-        const data = await response.json();
+      if (!doctorId) {
+        setErrorMessage('Error: No se pudo obtener el ID del doctor.');
+        return;
+      }
+
+      // Buscar el patient_id utilizando la cédula
+      const patientResponse = await getPatientIdByCedula(formData.cedula, token);
+
+      if (patientResponse.status !== 200) {
+        setErrorMessage(patientResponse.data.message || 'Error al buscar el paciente');
+        return;
+      }
+
+      const patientId = patientResponse.data.user_id;
+
+      if (!patientId) {
+        setErrorMessage('Error: No se pudo obtener el ID del paciente.');
+        return;
+      }
+
+      console.log('patientId:', patientId);
+      console.log('doctorId:', doctorId);
+
+      // Registrar la consulta
+      const consultationData = { ...formData, patient_id: patientId, doctor_id: doctorId };
+      const response = await registerConsultation(consultationData, token);
+
+      if (response.status === 201) {
         setSuccessMessage('Consulta registrada exitosamente');
-        console.log(data); // Puedes usar los datos para algún propósito adicional
+        console.log(response.data); // Puedes usar los datos para algún propósito adicional
         setFormData({
           cedula: '',
           peso: '',
@@ -55,8 +75,7 @@ const RegistrarConsulta = () => {
           sintomas: '', 
         });
       } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.message || 'Error al registrar la consulta');
+        setErrorMessage(response.data.message || 'Error al registrar la consulta');
       }
     } catch (error) {
       console.error('Error al conectar con el servidor:', error);
