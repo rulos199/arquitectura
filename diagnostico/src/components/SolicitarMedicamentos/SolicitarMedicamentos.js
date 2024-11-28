@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getMedicamentos, sendMedicationPDF } from '../../services/api';
+import NotificationService from '../../services/NotificationService'; // Importar el servicio de notificaciones
 import './SolicitarMedicamentos.css';
 
 const SolicitarMedicamentos = () => {
@@ -13,6 +14,7 @@ const SolicitarMedicamentos = () => {
         setMedicamentos(response.data);
       } catch (error) {
         console.error('Error al obtener los medicamentos:', error);
+        NotificationService.notify('Error al obtener los medicamentos'); // Mostrar notificación de error
       }
     };
 
@@ -20,6 +22,7 @@ const SolicitarMedicamentos = () => {
       fetchMedicamentos();
     } else {
       console.error('El ID del paciente no es válido.');
+      NotificationService.notify('El ID del paciente no es válido'); // Mostrar notificación de error
     }
   }, [patientId]);
 
@@ -34,13 +37,13 @@ const SolicitarMedicamentos = () => {
   
       const response = await sendMedicationPDF(patientId, token);
       if (response.status === 200) {
-        alert('PDF enviado correctamente.');
+        NotificationService.notify('PDF enviado correctamente'); // Mostrar notificación de éxito
       } else {
-        alert('Error al enviar el PDF.');
+        NotificationService.notify('Error al enviar el PDF'); // Mostrar notificación de error
       }
     } catch (error) {
       console.error('Error al enviar el PDF:', error);
-      alert('Error al enviar el PDF.');
+      NotificationService.notify('Error al enviar el PDF'); // Mostrar notificación de error
     }
   };
 

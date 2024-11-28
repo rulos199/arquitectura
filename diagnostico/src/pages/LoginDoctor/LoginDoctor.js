@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../Registro.css'; // Asegúrate de que la ruta sea correcta
+import '../Registro.css'; 
 
 const LoginDoctor = ({ setToken, setUserName }) => {
   const [username, setUsername] = useState('');
@@ -14,12 +14,12 @@ const LoginDoctor = ({ setToken, setUserName }) => {
     try {
       const response = await axios.post('http://localhost:5000/api/users/login/doctor', { username, password });
       setToken(response.data.token);
-      setUserName(response.data.userName); // Asegúrate de que la respuesta contenga el nombre del usuario
+      setUserName(response.data.userName); 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userName', response.data.userName);
-      localStorage.setItem('doctorId', response.data.userId); // Almacena el ID del doctor
+      localStorage.setItem('doctorId', response.data.userId); 
       setMessage('Inicio de sesión exitoso');
-      navigate('/home/doctor'); // Redirige a la página principal o dashboard
+      navigate('/home/doctor');
     } catch (error) {
       setMessage('Credenciales incorrectas');
     }
@@ -31,7 +31,7 @@ const LoginDoctor = ({ setToken, setUserName }) => {
         <h2>Iniciar Sesión Doctor</h2>
         <form onSubmit={handleLogin}>
           <div className="input-container">
-            <i className="fas fa-user"></i> {/* Puedes personalizar el icono según tu preferencia */}
+            <i className="fas fa-user"></i> {}
             <input
               type="text"
               placeholder="Usuario"
@@ -40,7 +40,7 @@ const LoginDoctor = ({ setToken, setUserName }) => {
             />
           </div>
           <div className="input-container">
-            <i className="fas fa-lock"></i> {/* Puedes personalizar el icono según tu preferencia */}
+            <i className="fas fa-lock"></i> {}
             <input
               type="password"
               placeholder="Contraseña"

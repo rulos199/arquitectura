@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { getPatientIdByCedula, registerConsultation } from '../../services/api';
+import NotificationService from '../../services/NotificationService'; // Importar el servicio de notificaciones
 import './registrarConsulta.css'; // Importar el archivo CSS
 
 const RegistrarConsulta = ({ onConsultaRegistrada }) => {
@@ -37,6 +38,7 @@ const RegistrarConsulta = ({ onConsultaRegistrada }) => {
 
       if (!doctorId) {
         setErrorMessage('Error: No se pudo obtener el ID del doctor.');
+        NotificationService.notify('Error: No se pudo obtener el ID del doctor.'); // Mostrar notificación de error
         return;
       }
 
@@ -45,6 +47,7 @@ const RegistrarConsulta = ({ onConsultaRegistrada }) => {
 
       if (patientResponse.status !== 200) {
         setErrorMessage(patientResponse.data.message || 'Error al buscar el paciente');
+        NotificationService.notify(patientResponse.data.message || 'Error al buscar el paciente'); // Mostrar notificación de error
         return;
       }
 
@@ -52,6 +55,7 @@ const RegistrarConsulta = ({ onConsultaRegistrada }) => {
 
       if (!patientId) {
         setErrorMessage('Error: No se pudo obtener el ID del paciente.');
+        NotificationService.notify('Error: No se pudo obtener el ID del paciente.'); // Mostrar notificación de error
         return;
       }
 
@@ -64,6 +68,7 @@ const RegistrarConsulta = ({ onConsultaRegistrada }) => {
 
       if (response.status === 201) {
         setSuccessMessage('Consulta registrada exitosamente');
+        NotificationService.notify('Consulta registrada exitosamente'); // Mostrar notificación de éxito
         console.log(response.data); // Puedes usar los datos para algún propósito adicional
         setFormData({
           cedula: '',
@@ -80,10 +85,12 @@ const RegistrarConsulta = ({ onConsultaRegistrada }) => {
         onConsultaRegistrada(patientId); // Pasar el patientId a la función para cambiar la vista
       } else {
         setErrorMessage(response.data.message || 'Error al registrar la consulta');
+        NotificationService.notify(response.data.message || 'Error al registrar la consulta'); // Mostrar notificación de error
       }
     } catch (error) {
       console.error('Error al conectar con el servidor:', error);
       setErrorMessage('Error al conectar con el servidor');
+      NotificationService.notify('Error al conectar con el servidor'); // Mostrar notificación de error
     }
   };
 

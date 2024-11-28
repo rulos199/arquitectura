@@ -5,13 +5,13 @@ const SendEmailCommand = require('../commands/sendEmailCommand');
 exports.sendMedicationPDF = async (req, res) => {
   const { patientId } = req.body;
 
-  // Verificar si patientId es un número válido
+  
   if (!patientId || isNaN(patientId)) {
     return res.status(400).json({ message: 'El ID del paciente debe ser un número válido.' });
   }
 
   try {
-    // Query para obtener los medicamentos
+    
     const result = await pool.query(
       `SELECT m.name, m.dose, p.email 
        FROM Medication m 
@@ -20,7 +20,7 @@ exports.sendMedicationPDF = async (req, res) => {
        JOIN Patient p ON c.patient_id = p.user_id 
        WHERE c.patient_id = $1 
        ORDER BY c.consultation_id DESC LIMIT 1`,
-      [Number(patientId)] // Convertir a número explícitamente
+      [Number(patientId)] 
     );
 
     if (result.rows.length === 0) {
@@ -30,14 +30,14 @@ exports.sendMedicationPDF = async (req, res) => {
     const medicamentos = result.rows;
     const email = medicamentos[0].email;
 
-    // Crear el PDF
+    
     const doc = new PDFDocument();
     let buffers = [];
     doc.on('data', buffers.push.bind(buffers));
     doc.on('end', async () => {
       let pdfData = Buffer.concat(buffers);
 
-      // Crear el comando para enviar el correo electrónico
+      
       const sendEmailCommand = new SendEmailCommand(
         email,
         'Medicamentos de su última cita',
@@ -60,7 +60,7 @@ exports.sendMedicationPDF = async (req, res) => {
       }
     });
 
-    // Agregar contenido al PDF
+   
     doc.fontSize(16).text('Medicamentos de su última cita', { align: 'center' });
     doc.moveDown();
     medicamentos.forEach((medicamento) => {

@@ -26,7 +26,7 @@ export const getHistoriaClinica = (patientId) => {
   return axios.get(API_URL + `historia/${patientId}`);
 };
 
-// Nueva función para obtener el patient_id por cédula
+
 export const getPatientIdByCedula = (cedula, token) => {
   return axios.get(API_URL + `patients/${cedula}`, {
     headers: {
@@ -35,7 +35,7 @@ export const getPatientIdByCedula = (cedula, token) => {
   });
 };
 
-// Nueva función para registrar una consulta
+
 export const registerConsultation = (consultationData, token) => {
   return axios.post(API_URL + 'consultations', consultationData, {
     headers: {
@@ -45,7 +45,7 @@ export const registerConsultation = (consultationData, token) => {
 };
 
 
-// Nueva función para agregar medicamentos
+
 export const addMedication = (patientId, medications, token) => {
   return axios.post(API_URL + 'medications', { patientId, medications }, {
     headers: {
@@ -55,7 +55,7 @@ export const addMedication = (patientId, medications, token) => {
 };
 
 
-// Nueva función para enviar el PDF de medicamentos
+
 export const sendMedicationPDF = async (patientId, token) => {
   if (typeof patientId !== 'number') {
     throw new Error('El ID del paciente debe ser un número.');
@@ -72,7 +72,7 @@ export const sendMedicationPDF = async (patientId, token) => {
   );
 };
 
-// Nueva función para enviar el PDF de la historia clínica
+
 export const sendHistoriaClinicaPDF = (patientId, token) => {
   return axios.post(API_URL + 'historia/send-pdf', { patientId }, {
     headers: {

@@ -1,0 +1,12 @@
+/* Notification.css */
+.notification {
+  position: fixed;
+  bottom: 20px; /* Cambiar de top a bottom */
+  left: 20px; /* Cambiar de right a left */
+  background-color: #289e42;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}

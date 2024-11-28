@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { addMedication } from '../../services/api';
+import NotificationService from '../../services/NotificationService'; // Importar el servicio de notificaciones
 import './autorizarMedicamentos.css'; // Importar el archivo CSS
 
 const AutorizarMedicamentos = ({ patientId }) => {
@@ -13,6 +14,7 @@ const AutorizarMedicamentos = ({ patientId }) => {
       console.log('Medicamento agregado:', nuevoMedicamento); // Debug
     } else {
       console.error('Por favor llena todos los campos del medicamento');
+      NotificationService.notify('Por favor llena todos los campos del medicamento'); // Mostrar notificación de error
     }
   };
 
@@ -22,6 +24,7 @@ const AutorizarMedicamentos = ({ patientId }) => {
 
     if (medicamentos.length === 0) {
       console.error('No hay medicamentos para guardar'); // Log de validación
+      NotificationService.notify('No hay medicamentos para guardar'); // Mostrar notificación de error
       return;
     }
 
@@ -29,10 +32,11 @@ const AutorizarMedicamentos = ({ patientId }) => {
       console.log('Enviando medicamentos al backend:', { patientId, medications: medicamentos }); // Debug
       await addMedication(patientId, medicamentos, token);
       console.log('Medicamentos guardados correctamente');
-      alert('Medicamentos guardados correctamente'); // Mostrar alerta
+      NotificationService.notify('Medicamentos guardados correctamente'); // Mostrar notificación de éxito
       setMedicamentos([]); // Limpiar la lista después de guardar
     } catch (error) {
       console.error('Error al guardar los medicamentos:', error);
+      NotificationService.notify('Error al guardar los medicamentos'); // Mostrar notificación de error
     }
   };
 

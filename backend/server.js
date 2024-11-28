@@ -16,11 +16,11 @@ const autorizarMedicamentoController = require('./controllers/autorizarMedicamen
 
 const app = express();
 
-// Configuración de middlewares
-app.use(cors()); // Permitir solicitudes de otros orígenes
-app.use(express.json()); // Permitir recibir datos JSON en las solicitudes
 
-// Middleware para verificar el token de autenticación
+app.use(cors()); 
+app.use(express.json()); 
+
+
 function authenticateToken(req, res, next) {
   const token = req.headers['authorization']?.split(' ')[1];
   if (!token) return res.sendStatus(401);
@@ -32,7 +32,7 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// Rutas de usuarios
+
 app.post('/api/users/register/patient', async (req, res) => {
   const { username, password, name, id_number, email, phone } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -70,7 +70,7 @@ app.post('/api/users/login/patient', async (req, res) => {
   }
 });
 
-// Registro de doctores y login
+
 app.post('/api/users/register/doctor', async (req, res) => {
   const { username, password, name, id_number, specialty, availability } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -108,16 +108,16 @@ app.post('/api/users/login/doctor', async (req, res) => {
   }
 });
 
-// Rutas de consultas
+
 app.get('/api/patients/:cedula', authenticateToken, consultationController.getPatientIdByCedula);
 app.post('/api/consultations', authenticateToken, consultationController.registerConsultation);
 
 
-// Rutas de citas y funcionalidades adicionales
+
 app.post('/api/appointments/book', authenticateToken, appointmentController.bookAppointment);
 app.get('/api/appointments', authenticateToken, appointmentController.getAppointments);
 
-// Obtener médicos activos
+
 app.get('/api/doctors', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM Doctor WHERE availability = true');
@@ -127,7 +127,7 @@ app.get('/api/doctors', async (req, res) => {
   }
 });
 
-// Obtener medicamentos del paciente
+
 app.get('/api/medicamentos/:patientId', async (req, res) => {
   const { patientId } = req.params;
 
@@ -142,7 +142,7 @@ app.get('/api/medicamentos/:patientId', async (req, res) => {
   }
 });
 
-// Obtener historia clínica del paciente
+
 app.get('/api/historia/:patientId', async (req, res) => {
   const { patientId } = req.params;
 
@@ -157,7 +157,7 @@ app.get('/api/historia/:patientId', async (req, res) => {
   }
 });
 
-// Enviar PDF de medicamentos
+
 app.post('/api/medicamentos/send-pdf', authenticateToken, (req, res, next) => {
   const { patientId } = req.body;
 
@@ -168,14 +168,14 @@ app.post('/api/medicamentos/send-pdf', authenticateToken, (req, res, next) => {
   next();
 }, medicationController.sendMedicationPDF);
 
-// Enviar PDF de historia clínica
+
 app.post('/api/historia/send-pdf', authenticateToken, historiaClinicaController.sendHistoriaClinicaPDF);
 
-// Autorizar medicamentos
+
 app.post('/api/medications', authenticateToken, autorizarMedicamentoController.addMedication); // Usar el nuevo controlador
 
 
-// Iniciar el servidor
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Servidor iniciado en el puerto ${PORT}`);

@@ -1,8 +1,8 @@
-require('dotenv').config(); // Cargar las variables del archivo .env
+require('dotenv').config(); 
 
-const { Pool } = require('pg'); // PostgreSQL client
+const { Pool } = require('pg'); 
 
-// Configuración de conexión a PostgreSQL
+
 const pool = new Pool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -11,4 +11,4 @@ const pool = new Pool({
   database: process.env.DB_NAME
 });
 
-module.exports = pool; // Exportar la conexión para usarla en otros archivos
+module.exports = pool; 

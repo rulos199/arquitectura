@@ -7,7 +7,7 @@ import LoginDoctor from './pages/LoginDoctor/LoginDoctor';
 import RegisterPatient from './pages/RegisterPatient/RegisterPatient';
 import RegisterDoctor from './pages/RegisterDoctor/RegisterDoctor';
 import Header from './components/Header/Header';
-import './App.css';
+import Notification from './components/Notification/Notification'; 
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -37,6 +37,7 @@ const App = () => {
   return (
     <Router>
       <div>
+        <Notification /> {}
         {token ? (
           <>
             <Routes>
@@ -63,5 +64,4 @@ const App = () => {
     </Router>
   );
 }
-
 export default App;

@@ -5,13 +5,13 @@ const SendEmailCommand = require('../commands/sendEmailCommand');
 exports.sendHistoriaClinicaPDF = async (req, res) => {
   const { patientId } = req.body;
 
-  // Verificar si patientId es un número válido
+  
   if (!patientId || isNaN(patientId)) {
     return res.status(400).json({ message: 'El ID del paciente debe ser un número válido.' });
   }
 
   try {
-    // Query para obtener la historia clínica de los últimos 6 meses
+    
     const result = await pool.query(
       `SELECT 
         c.consultation_id,
@@ -33,7 +33,7 @@ exports.sendHistoriaClinicaPDF = async (req, res) => {
        JOIN Patient p ON c.patient_id = p.user_id
        WHERE c.patient_id = $1 AND c.date >= NOW() - INTERVAL '6 months'
        ORDER BY c.date DESC`,
-      [Number(patientId)] // Convertir a número explícitamente
+      [Number(patientId)] 
     );
 
     if (result.rows.length === 0) {
@@ -50,7 +50,7 @@ exports.sendHistoriaClinicaPDF = async (req, res) => {
     doc.on('end', async () => {
       let pdfData = Buffer.concat(buffers);
 
-      // Crear el comando para enviar el correo electrónico
+      
       const sendEmailCommand = new SendEmailCommand(
         email,
         'Historia Clínica de los últimos 6 meses',
@@ -73,7 +73,7 @@ exports.sendHistoriaClinicaPDF = async (req, res) => {
       }
     });
 
-    // Agregar contenido al PDF
+    
     doc.fontSize(16).text('Historia Clínica de los últimos 6 meses', { align: 'center' });
     doc.moveDown();
     historiaClinica.forEach((consulta) => {

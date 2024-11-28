@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getHistoriaClinica, sendHistoriaClinicaPDF } from '../../services/api';
+import NotificationService from '../../services/NotificationService'; // Importar el servicio de notificaciones
 import './SolicitarHistoriaClinica.css';
 
 const SolicitarHistoriaClinica = () => {
@@ -13,6 +14,7 @@ const SolicitarHistoriaClinica = () => {
         setHistoriaClinica(response.data);
       } catch (error) {
         console.error('Error al obtener la historia clínica:', error);
+        NotificationService.notify('Error al obtener la historia clínica'); // Mostrar notificación de error
       }
     };
 
@@ -20,6 +22,7 @@ const SolicitarHistoriaClinica = () => {
       fetchHistoriaClinica();
     } else {
       console.error('El ID del paciente no es válido.');
+      NotificationService.notify('El ID del paciente no es válido'); // Mostrar notificación de error
     }
   }, [patientId]);
 
@@ -34,13 +37,13 @@ const SolicitarHistoriaClinica = () => {
   
       const response = await sendHistoriaClinicaPDF(patientId, token);
       if (response.status === 200) {
-        alert('PDF enviado correctamente.');
+        NotificationService.notify('PDF enviado correctamente'); // Mostrar notificación de éxito
       } else {
-        alert('Error al enviar el PDF.');
+        NotificationService.notify('Error al enviar el PDF'); // Mostrar notificación de error
       }
     } catch (error) {
       console.error('Error al enviar el PDF:', error);
-      alert('Error al enviar el PDF.');
+      NotificationService.notify('Error al enviar el PDF'); // Mostrar notificación de error
     }
   };
 
@@ -51,7 +54,6 @@ const SolicitarHistoriaClinica = () => {
         {historiaClinica.map((consulta) => (
           <li key={consulta.consultation_id}>
             <p>Síntomas: {consulta.symptoms}</p>
-            <p>Parámetros: {consulta.parameters}</p>
             <p>Sugerencias: {consulta.suggestions}</p>
             <p>Probabilidad de Enfermedad: {consulta.disease_probability}%</p>
             <p>Recomendaciones: {consulta.recommendations}</p>
