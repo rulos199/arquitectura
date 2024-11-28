@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../Registro.css'; // Asegúrate de que la ruta sea correcta
+import '../Registro.css'; 
 
 const LoginPatient = ({ setToken, setUserName }) => {
   const [username, setUsername] = useState('');
@@ -14,12 +14,12 @@ const LoginPatient = ({ setToken, setUserName }) => {
     try {
       const response = await axios.post('http://localhost:5000/api/users/login/patient', { username, password });
       setToken(response.data.token);
-      setUserName(response.data.userName); // Asegúrate de que la respuesta contenga el nombre del usuario
+      setUserName(response.data.userName); 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userName', response.data.userName);
-      localStorage.setItem('patientId', response.data.userId); // Almacena el ID del paciente
+      localStorage.setItem('patientId', response.data.userId); 
       setMessage('Inicio de sesión exitoso');
-      navigate('/home/patient'); // Redirige a la página principal o dashboard
+      navigate('/home/patient'); 
     } catch (error) {
       setMessage('Credenciales incorrectas');
     }
@@ -31,7 +31,7 @@ const LoginPatient = ({ setToken, setUserName }) => {
         <h2>Iniciar Sesión Paciente</h2>
         <form onSubmit={handleLogin}>
           <div className="input-container">
-            <i className="fas fa-user"></i> {/* Puedes personalizar el icono según tu preferencia */}
+            <i className="fas fa-user"></i> {}
             <input
               type="text"
               placeholder="Usuario"
@@ -40,7 +40,7 @@ const LoginPatient = ({ setToken, setUserName }) => {
             />
           </div>
           <div className="input-container">
-            <i className="fas fa-lock"></i> {/* Puedes personalizar el icono según tu preferencia */}
+            <i className="fas fa-lock"></i> {}
             <input
               type="password"
               placeholder="Contraseña"

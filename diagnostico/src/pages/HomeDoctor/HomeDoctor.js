@@ -1,35 +1,46 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import RegistrarConsulta from '../../components/RegistrarConsulta/RegistrarConsulta'; // Asegúrate de importar el componente
 import AutorizarMedicamentos from '../../components/AutorizarMedicamentos/AutorizarMedicamentos'; // Asegúrate de importar el componente
-
-
+import './HomeDoctor.css'; // Importar el archivo CSS
 
 const HomeDoctor = () => {
-  const [vistaActual, setVistaActual] = useState(''); // Estado para controlar la vista actual
+  const [view, setView] = useState('');
+  const [patientId, setPatientId] = useState(null);
+
+  const renderView = () => {
+    switch (view) {
+      case 'consulta':
+        return (
+          <div className="form-container">
+            <RegistrarConsulta onConsultaRegistrada={(id) => { setPatientId(id); setView('medicamentos'); }} />
+          </div>
+        );
+      case 'medicamentos':
+        return (
+          <div className="form-container">
+            <AutorizarMedicamentos patientId={patientId} />
+          </div>
+        );
+      default:
+        return <div>Seleccione una opción del menú</div>;
+    }
+  };
 
   return (
-    <div>
-      <h1>Menú Médico</h1>
-      {!vistaActual && (
-        <div>
-          <button onClick={() => setVistaActual('consulta')}>Registrar Consulta</button>
-          <button onClick={() => setVistaActual('medicamentos')}>Autorizar Medicamentos</button>
-        </div>
-      )}
-
-      {/* Renderizar vistas */}
-      <div style={{ marginTop: '20px' }}>
-        {vistaActual === 'consulta' && (
-          <RegistrarConsulta onConsultaRegistrada={() => setVistaActual('medicamentos')} />
-        )}
-        {vistaActual === 'medicamentos' && <AutorizarMedicamentos />}
+    <div className="home-doctor">
+      <div className="sidebar">
+        <ul>
+          <li onClick={() => setView('consulta')}>Registrar Consulta</li>
+          <li onClick={() => setView('medicamentos')}>Autorizar Medicamentos</li>
+        </ul>
+      </div>
+      <div className="content">
+        {renderView()}
       </div>
     </div>
   );
 };
 
 export default HomeDoctor;
-
-
 
 

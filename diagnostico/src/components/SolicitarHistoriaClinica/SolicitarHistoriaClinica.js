@@ -1,26 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { getHistoriaClinica } from '../../services/api';
+import { getHistoriaClinica, sendHistoriaClinicaPDF } from '../../services/api';
+import NotificationService from '../../services/NotificationService'; // Importar el servicio de notificaciones
 import './SolicitarHistoriaClinica.css';
 
 const SolicitarHistoriaClinica = () => {
   const [historiaClinica, setHistoriaClinica] = useState([]);
+  const patientId = parseInt(localStorage.getItem('patientId'), 10); // Convertir a número
 
   useEffect(() => {
     const fetchHistoriaClinica = async () => {
       try {
-        const response = await getHistoriaClinica();
+        const response = await getHistoriaClinica(patientId);
         setHistoriaClinica(response.data);
       } catch (error) {
         console.error('Error al obtener la historia clínica:', error);
+        NotificationService.notify('Error al obtener la historia clínica'); // Mostrar notificación de error
       }
     };
 
-    fetchHistoriaClinica();
-  }, []);
+    if (!isNaN(patientId)) {
+      fetchHistoriaClinica();
+    } else {
+      console.error('El ID del paciente no es válido.');
+      NotificationService.notify('El ID del paciente no es válido'); // Mostrar notificación de error
+    }
+  }, [patientId]);
 
-  const handleSolicitarHistoriaClinica = () => {
-    // Lógica para solicitar historia clínica
-    alert('Se ha enviado un PDF con su historia clínica a su correo registrado.');
+  const handleSolicitarHistoriaClinica = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const patientId = parseInt(localStorage.getItem('patientId'), 10); // Convertir a número
+  
+      if (isNaN(patientId)) {
+        throw new Error('El ID del paciente no es válido.');
+      }
+  
+      const response = await sendHistoriaClinicaPDF(patientId, token);
+      if (response.status === 200) {
+        NotificationService.notify('PDF enviado correctamente'); // Mostrar notificación de éxito
+      } else {
+        NotificationService.notify('Error al enviar el PDF'); // Mostrar notificación de error
+      }
+    } catch (error) {
+      console.error('Error al enviar el PDF:', error);
+      NotificationService.notify('Error al enviar el PDF'); // Mostrar notificación de error
+    }
   };
 
   return (
@@ -30,7 +54,6 @@ const SolicitarHistoriaClinica = () => {
         {historiaClinica.map((consulta) => (
           <li key={consulta.consultation_id}>
             <p>Síntomas: {consulta.symptoms}</p>
-            <p>Parámetros: {consulta.parameters}</p>
             <p>Sugerencias: {consulta.suggestions}</p>
             <p>Probabilidad de Enfermedad: {consulta.disease_probability}%</p>
             <p>Recomendaciones: {consulta.recommendations}</p>

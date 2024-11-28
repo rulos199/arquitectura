@@ -25,6 +25,7 @@ exports.registerConsultation = async (req, res) => {
     ocupacion,
     actividadFisica,
     sintomas,
+    date, // Nuevo campo
     patient_id,
     doctor_id,
   } = req.body;
@@ -38,8 +39,8 @@ exports.registerConsultation = async (req, res) => {
 
   try {
     const query = `
-      INSERT INTO consultation (cedula, weight, height, age, gender, marital_status, occupation, physical_activity, symptoms, patient_id, doctor_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      INSERT INTO consultation (cedula, weight, height, age, gender, marital_status, occupation, physical_activity, symptoms, date, patient_id, doctor_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *;
     `;
 
@@ -53,6 +54,7 @@ exports.registerConsultation = async (req, res) => {
       ocupacion,
       actividadFisica,
       sintomas,
+      date, // Nuevo campo
       patient_id,
       doctor_id,
     ];

@@ -1,0 +1,51 @@
+/* autorizarMedicamentos.css */
+.autorizar-medicamentos-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .autorizar-medicamentos-container h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  .autorizar-medicamentos-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  
+  .autorizar-medicamentos-container input,
+  .autorizar-medicamentos-container button,
+  .autorizar-medicamentos-container ul {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .autorizar-medicamentos-container button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .autorizar-medicamentos-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .autorizar-medicamentos-container ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .autorizar-medicamentos-container ul li {
+    margin-bottom: 8px;
+  }

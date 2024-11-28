@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getActiveDoctors } from '../../services/api';
+import NotificationService from '../../services/NotificationService'; // Importar el servicio de notificaciones
 import './SolicitarCita.css';
 
 const SolicitarCita = ({ tipo }) => {
@@ -45,11 +46,11 @@ const SolicitarCita = ({ tipo }) => {
           Authorization: `Bearer ${token}`
         }
       });
-      alert(`Cita ${appointmentType} confirmada con el Dr. ${medico} el ${fecha} a las ${hora}`);
+      NotificationService.notify(`Cita ${appointmentType} confirmada con el Dr. ${medico} el ${fecha} a las ${hora}`); // Mostrar notificación
       console.log('Respuesta del servidor:', response.data); // Maneja la respuesta del servidor
     } catch (error) {
       console.error('Error al reservar la cita:', error);
-      alert('Error al reservar la cita');
+      NotificationService.notify('Error al reservar la cita'); // Mostrar notificación de error
     }
   };
 

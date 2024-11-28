@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { getPatientIdByCedula, registerConsultation } from '../../services/api';
+import NotificationService from '../../services/NotificationService'; // Importar el servicio de notificaciones
+import './registrarConsulta.css'; // Importar el archivo CSS
 
-const RegistrarConsulta = () => {
+const RegistrarConsulta = ({ onConsultaRegistrada }) => {
   const [formData, setFormData] = useState({
     cedula: '',
     peso: '',
@@ -12,6 +14,7 @@ const RegistrarConsulta = () => {
     ocupacion: '',
     actividadFisica: '',
     sintomas: '', // Nuevo campo para los síntomas
+    date: '', // Nuevo campo para la fecha
   });
 
   const [successMessage, setSuccessMessage] = useState('');
@@ -35,6 +38,7 @@ const RegistrarConsulta = () => {
 
       if (!doctorId) {
         setErrorMessage('Error: No se pudo obtener el ID del doctor.');
+        NotificationService.notify('Error: No se pudo obtener el ID del doctor.'); // Mostrar notificación de error
         return;
       }
 
@@ -43,6 +47,7 @@ const RegistrarConsulta = () => {
 
       if (patientResponse.status !== 200) {
         setErrorMessage(patientResponse.data.message || 'Error al buscar el paciente');
+        NotificationService.notify(patientResponse.data.message || 'Error al buscar el paciente'); // Mostrar notificación de error
         return;
       }
 
@@ -50,6 +55,7 @@ const RegistrarConsulta = () => {
 
       if (!patientId) {
         setErrorMessage('Error: No se pudo obtener el ID del paciente.');
+        NotificationService.notify('Error: No se pudo obtener el ID del paciente.'); // Mostrar notificación de error
         return;
       }
 
@@ -62,6 +68,7 @@ const RegistrarConsulta = () => {
 
       if (response.status === 201) {
         setSuccessMessage('Consulta registrada exitosamente');
+        NotificationService.notify('Consulta registrada exitosamente'); // Mostrar notificación de éxito
         console.log(response.data); // Puedes usar los datos para algún propósito adicional
         setFormData({
           cedula: '',
@@ -72,19 +79,23 @@ const RegistrarConsulta = () => {
           estadoCivil: '',
           ocupacion: '',
           actividadFisica: '',
-          sintomas: '', 
+          sintomas: '',
+          date: '', // Nuevo campo para la fecha
         });
+        onConsultaRegistrada(patientId); // Pasar el patientId a la función para cambiar la vista
       } else {
         setErrorMessage(response.data.message || 'Error al registrar la consulta');
+        NotificationService.notify(response.data.message || 'Error al registrar la consulta'); // Mostrar notificación de error
       }
     } catch (error) {
       console.error('Error al conectar con el servidor:', error);
       setErrorMessage('Error al conectar con el servidor');
+      NotificationService.notify('Error al conectar con el servidor'); // Mostrar notificación de error
     }
   };
 
   return (
-    <div>
+    <div className="registrar-consulta-container">
       <h2>Registrar Consulta</h2>
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
@@ -184,6 +195,16 @@ const RegistrarConsulta = () => {
             value={formData.sintomas}
             onChange={handleInputChange}
             placeholder="Describa los síntomas"
+            required
+          />
+        </div>
+        <div>
+          <label>Fecha:</label>
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
             required
           />
         </div>

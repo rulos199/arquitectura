@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { registerPatient } from '../../services/api';
-import '../Registro.css'; // Asegúrate de que la ruta sea correcta
+import '../Registro.css'; 
 
 function RegisterPatient() {
   const [username, setUsername] = useState('');
@@ -22,9 +22,9 @@ function RegisterPatient() {
         email,
         phone
       });
-      setMessage(response.data.message); // Mostrar mensaje de éxito o error
+      setMessage(response.data.message); 
     } catch (error) {
-      setMessage('Error en el registro'); // Mostrar mensaje de error
+      setMessage('Error en el registro'); 
     }
   };
 

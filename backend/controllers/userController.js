@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../db');
 
-// Registro de Pacientes
+
 const registerPatient = async (req, res) => {
   const { username, password, name, id_number, email, phone } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -18,7 +18,7 @@ const registerPatient = async (req, res) => {
   }
 };
 
-// Inicio de Sesión de Pacientes
+
 const loginPatient = async (req, res) => {
   const { username, password } = req.body;
 
@@ -41,7 +41,7 @@ const loginPatient = async (req, res) => {
   }
 };
 
-// Registro de Doctores
+
 const registerDoctor = async (req, res) => {
   const { username, password, name, id_number, specialty, availability } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -57,7 +57,7 @@ const registerDoctor = async (req, res) => {
   }
 };
 
-// Inicio de Sesión de Doctores
+
 const loginDoctor = async (req, res) => {
   const { username, password } = req.body;
 
@@ -80,7 +80,7 @@ const loginDoctor = async (req, res) => {
   }
 };
 
-// Obtener Médicos Activos
+
 const getActiveDoctors = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM Doctor WHERE availability = true');
@@ -90,7 +90,7 @@ const getActiveDoctors = async (req, res) => {
   }
 };
 
-// Obtener Medicamentos del Paciente
+
 const getMedicamentos = async (req, res) => {
   const { patientId } = req.params;
 
@@ -105,7 +105,7 @@ const getMedicamentos = async (req, res) => {
   }
 };
 
-// Obtener Historia Clínica del Paciente
+
 const getHistoriaClinica = async (req, res) => {
   const { patientId } = req.params;
 
