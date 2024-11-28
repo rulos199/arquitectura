@@ -43,3 +43,42 @@ export const registerConsultation = (consultationData, token) => {
     }
   });
 };
+
+
+// Nueva función para agregar medicamentos
+export const addMedication = (patientId, medications, token) => {
+  return axios.post(API_URL + 'medications', { patientId, medications }, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+};
+
+
+// Nueva función para enviar el PDF de medicamentos
+export const sendMedicationPDF = async (patientId, token) => {
+  if (typeof patientId !== 'number') {
+    throw new Error('El ID del paciente debe ser un número.');
+  }
+
+  return axios.post(
+    API_URL + 'medicamentos/send-pdf',
+    { patientId },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+// Nueva función para enviar el PDF de la historia clínica
+export const sendHistoriaClinicaPDF = (patientId, token) => {
+  return axios.post(API_URL + 'historia/send-pdf', { patientId }, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+};
+
+

@@ -1,26 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { getHistoriaClinica } from '../../services/api';
+import { getHistoriaClinica, sendHistoriaClinicaPDF } from '../../services/api';
 import './SolicitarHistoriaClinica.css';
 
 const SolicitarHistoriaClinica = () => {
   const [historiaClinica, setHistoriaClinica] = useState([]);
+  const patientId = parseInt(localStorage.getItem('patientId'), 10); // Convertir a número
 
   useEffect(() => {
     const fetchHistoriaClinica = async () => {
       try {
-        const response = await getHistoriaClinica();
+        const response = await getHistoriaClinica(patientId);
         setHistoriaClinica(response.data);
       } catch (error) {
         console.error('Error al obtener la historia clínica:', error);
       }
     };
 
-    fetchHistoriaClinica();
-  }, []);
+    if (!isNaN(patientId)) {
+      fetchHistoriaClinica();
+    } else {
+      console.error('El ID del paciente no es válido.');
+    }
+  }, [patientId]);
 
-  const handleSolicitarHistoriaClinica = () => {
-    // Lógica para solicitar historia clínica
-    alert('Se ha enviado un PDF con su historia clínica a su correo registrado.');
+  const handleSolicitarHistoriaClinica = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const patientId = parseInt(localStorage.getItem('patientId'), 10); // Convertir a número
+  
+      if (isNaN(patientId)) {
+        throw new Error('El ID del paciente no es válido.');
+      }
+  
+      const response = await sendHistoriaClinicaPDF(patientId, token);
+      if (response.status === 200) {
+        alert('PDF enviado correctamente.');
+      } else {
+        alert('Error al enviar el PDF.');
+      }
+    } catch (error) {
+      console.error('Error al enviar el PDF:', error);
+      alert('Error al enviar el PDF.');
+    }
   };
 
   return (

@@ -8,6 +8,10 @@ const pool = require('./db'); // Asegúrate de que db.js esté configurado corre
 const bcrypt = require('bcrypt');
 const appointmentController = require('./controllers/appointmentController');
 const consultationController = require('./controllers/consultationController');
+const medicationController = require('./controllers/medicationController');
+const historiaClinicaController = require('./controllers/historiaClinicaController');
+const autorizarMedicamentoController = require('./controllers/autorizarMedicamentoController'); // Importar el nuevo controlador
+
 
 
 const app = express();
@@ -152,6 +156,24 @@ app.get('/api/historia/:patientId', async (req, res) => {
     res.status(500).json({ message: 'Error al obtener la historia clínica', error: error.message });
   }
 });
+
+// Enviar PDF de medicamentos
+app.post('/api/medicamentos/send-pdf', authenticateToken, (req, res, next) => {
+  const { patientId } = req.body;
+
+  if (!patientId || isNaN(patientId)) {
+    return res.status(400).json({ message: 'El ID del paciente debe ser un número válido.' });
+  }
+
+  next();
+}, medicationController.sendMedicationPDF);
+
+// Enviar PDF de historia clínica
+app.post('/api/historia/send-pdf', authenticateToken, historiaClinicaController.sendHistoriaClinicaPDF);
+
+// Autorizar medicamentos
+app.post('/api/medications', authenticateToken, autorizarMedicamentoController.addMedication); // Usar el nuevo controlador
+
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;

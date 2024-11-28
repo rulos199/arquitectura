@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { getPatientIdByCedula, registerConsultation } from '../../services/api';
+import './registrarConsulta.css'; // Importar el archivo CSS
 
-const RegistrarConsulta = () => {
+const RegistrarConsulta = ({ onConsultaRegistrada }) => {
   const [formData, setFormData] = useState({
     cedula: '',
     peso: '',
@@ -12,6 +13,7 @@ const RegistrarConsulta = () => {
     ocupacion: '',
     actividadFisica: '',
     sintomas: '', // Nuevo campo para los síntomas
+    date: '', // Nuevo campo para la fecha
   });
 
   const [successMessage, setSuccessMessage] = useState('');
@@ -72,8 +74,10 @@ const RegistrarConsulta = () => {
           estadoCivil: '',
           ocupacion: '',
           actividadFisica: '',
-          sintomas: '', 
+          sintomas: '',
+          date: '', // Nuevo campo para la fecha
         });
+        onConsultaRegistrada(patientId); // Pasar el patientId a la función para cambiar la vista
       } else {
         setErrorMessage(response.data.message || 'Error al registrar la consulta');
       }
@@ -84,7 +88,7 @@ const RegistrarConsulta = () => {
   };
 
   return (
-    <div>
+    <div className="registrar-consulta-container">
       <h2>Registrar Consulta</h2>
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
@@ -184,6 +188,16 @@ const RegistrarConsulta = () => {
             value={formData.sintomas}
             onChange={handleInputChange}
             placeholder="Describa los síntomas"
+            required
+          />
+        </div>
+        <div>
+          <label>Fecha:</label>
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
             required
           />
         </div>
